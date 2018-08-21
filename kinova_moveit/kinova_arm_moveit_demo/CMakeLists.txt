@@ -17,20 +17,38 @@ find_package(catkin REQUIRED
              rospy
              std_msgs
              message_generation
+			 robotiq_c_model_control
 )
 
 find_package(Boost REQUIRED system filesystem date_time thread)
+find_package(Eigen REQUIRED)
+find_package(kinova_driver REQUIRED)
+
+#######################################
+## msg add change by qcrong 20180416 ##
+#######################################
+add_message_files(
+	FILES
+	targetState.msg
+	targetsVector.msg
+        toolposeChange.msg
+)
+
+generate_messages(
+   DEPENDENCIES
+   actionlib_msgs
+   std_msgs  # Or other packages containing msgs
+)
 
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS 
-    moveit_core
-    moveit_ros_planning_interface
-    interactive_markers
+  moveit_core
+  moveit_ros_planning_interface
+  interactive_markers
+  CATKIN_DEPENDS message_runtime  #add by qcrong 20180416
 )
-find_package(Eigen REQUIRED)
 
-find_package(kinova_driver REQUIRED)
 
 ###########
 ## Build ##
@@ -62,6 +80,23 @@ target_link_libraries(talker1 ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_dr
 install(TARGETS talker1 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 ## end
 
+## added by qcrong in 2018/4/8
+add_executable(eye2hand_calib_control src/eye2hand_calib_control.cpp)
+target_link_libraries(eye2hand_calib_control ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS eye2hand_calib_control DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+## end
+
+## added by qcrong in 2018/4/17
+add_executable(our_pick_place src/our_pick_place.cpp)
+target_link_libraries(our_pick_place ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS our_pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+## end
+## added by qcrong in 2018/5/25
+add_executable(visual_detect_simulate src/visual_detect_simulate.cpp)
+target_link_libraries(visual_detect_simulate ${catkin_LIBRARIES} )
+install(TARGETS visual_detect_simulate DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+## end
+
 add_executable(work_scene src/work_scene.cpp)
 target_link_libraries(work_scene ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS work_scene DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
@@ -73,6 +108,14 @@ install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 add_executable(test_accuracy src/test_accuracy.cpp include/test_accuracy.h)
 target_link_libraries(test_accuracy ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS test_accuracy DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(finger_control src/finger_control.cpp)
+target_link_libraries(finger_control ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS finger_control DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})   #added by yang 20180417
+
+add_executable(finger_control_client src/finger_control_client.cpp)
+target_link_libraries(finger_control_client ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS finger_control_client DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})   #added by qcrong 20180815
 
 
 #get_cmake_property(_variableNames VARIABLES)
